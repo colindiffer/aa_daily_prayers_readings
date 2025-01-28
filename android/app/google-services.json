@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1038784008477",
+    "project_id": "aareadings25",
+    "storage_bucket": "aareadings25.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038784008477:android:39764a2387b65dd1b911f4",
+        "android_client_info": {
+          "package_name": "com.example.aa_readings_25"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4ZfdS7bUnSqiAcvaIPlX6zNMBbznmg8E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
