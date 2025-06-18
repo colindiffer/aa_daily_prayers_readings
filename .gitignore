@@ -43,3 +43,58 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Additional build and temporary files
+android/app/.cxx/
+android/build/
+android/app/build/
+android/local.properties
+android/key.properties
+
+# iOS build files
+ios/Pods/
+ios/Runner.xcworkspace/xcuserdata/
+ios/Runner.xcodeproj/xcuserdata/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/app.flx
+ios/Flutter/app.zip
+ios/.symlinks/
+
+# Native debug symbols
+native-debug-symbols/
+symbols/
+
+# Temporary and documentation files
+FINAL_*.md
+IMPROVEMENTS_*.md
+LAMBDA_*.md
+NOTIFICATION_*.md
+RESPONSIVE_*.md
+SCHEDULED_*.md
+SYNTAX_*.md
+TYPE_*.md
+STORE_DESCRIPTIONS.txt
+RELEASE_NOTES.txt
+flutter_cleaning_commands.md
+firebase_distribution_setup.md
+
+# Scripts and tools
+*.bat
+*.ps1
+*.sh
+clear_data.dart
+patches/
+releases/
+tools/
+test_*.dart
+
+# Desktop and web builds (if separate projects)
+desktop/
+web/
+
+# Build outputs
+app-*.apk
+app-*.aab
+app-*.ipa
