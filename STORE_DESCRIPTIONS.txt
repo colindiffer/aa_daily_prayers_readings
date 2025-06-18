@@ -1,0 +1,42 @@
+AA Readings 2025 - App Store Descriptions
+
+--------------------------
+SHORT DESCRIPTION (80 characters max)
+--------------------------
+
+Daily AA readings with advanced text-to-speech and customizable notifications.
+
+--------------------------
+FULL DESCRIPTION (4000 characters max)
+--------------------------
+
+AA Readings 2025 provides daily readings from Alcoholics Anonymous literature in a clean, accessible format. Stay connected to your recovery journey with inspiring daily messages that can be read or listened to through our high-quality text-to-speech technology.
+
+KEY FEATURES:
+
+• DAILY READINGS
+Get daily inspiration with our curated collection of AA readings organized by day and category. Save your favorites for quick access and easily share meaningful passages with others via text or email.
+
+• ADVANCED TEXT-TO-SPEECH
+Listen to readings with high-quality British English voice narration. Choose between male and female voices, adjust reading speed to your preference, and play selected readings in sequence with smooth transitions. Visual indicators clearly show which reading is currently playing.
+
+• CUSTOMIZABLE NOTIFICATIONS
+Never miss your daily reading with smart notification reminders. Schedule notifications at your preferred time and receive them reliably even when the app is closed. Easily toggle notifications on or off directly from settings.
+
+• PRIVACY-FOCUSED DESIGN
+We respect your privacy. The app includes no ads or user tracking by default, gives you complete control over analytics data sharing, and stores all reading data locally on your device.
+
+• INTUITIVE INTERFACE
+Enjoy a clean, distraction-free reading experience with intuitive navigation. Features include dynamic animations for currently playing readings, responsive design that works on all screen sizes, and clear visual indicators for playback status.
+
+• RELIABLE PERFORMANCE
+Experience fast app startup, optimized battery usage, and enhanced notification reliability across all Android versions.
+
+AA Readings 2025 is designed to be a supportive companion for those in recovery, providing daily inspiration and wisdom from AA literature wherever you go.
+
+Requirements:
+- Android 6.0 (Marshmallow) or higher
+- 50MB free storage space
+- Internet connection for initial setup (optional for daily use)
+
+This app is not affiliated with Alcoholics Anonymous World Services, Inc.

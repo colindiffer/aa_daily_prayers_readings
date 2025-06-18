@@ -1,0 +1,2 @@
+C:/Users/ColinDiffer/app/aa_readings_25/android/app/.cxx/RelWithDebInfo/492s6y4j/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/ColinDiffer/app/aa_readings_25/android/app/.cxx/RelWithDebInfo/492s6y4j/x86_64/CMakeFiles/rebuild_cache.dir

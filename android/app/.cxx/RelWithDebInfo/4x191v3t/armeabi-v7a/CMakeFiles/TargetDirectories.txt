@@ -1,0 +1,2 @@
+C:/Users/ColinDiffer/app/aa_readings_25/android/app/.cxx/RelWithDebInfo/4x191v3t/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/ColinDiffer/app/aa_readings_25/android/app/.cxx/RelWithDebInfo/4x191v3t/armeabi-v7a/CMakeFiles/rebuild_cache.dir

@@ -3,9 +3,8 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
-	<key>CFBundleDisplayName</key>
-	<string>Aa Readings 25</string>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>	<key>CFBundleDisplayName</key>
+	<string>AA Readings &amp; Prayers</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,5 +44,27 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<!-- iOS App Transport Security -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+	</dict>
+	
+	<!-- Background execution for notifications -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>background-processing</string>
+		<string>background-fetch</string>
+	</array>
+	
+	<!-- Privacy permissions -->
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>This app needs notification permissions to remind you about daily AA readings and spiritual practices.</string>
+	
+	<!-- Minimum iOS version support -->
+	<key>LSMinimumSystemVersion</key>
+	<string>12.0</string>
 </dict>
 </plist>

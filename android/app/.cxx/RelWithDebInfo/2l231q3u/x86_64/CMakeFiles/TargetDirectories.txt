@@ -1,0 +1,2 @@
+C:/Users/ColinDiffer/app/aa_readings_25 - Clean - single readings/android/app/.cxx/RelWithDebInfo/2l231q3u/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/ColinDiffer/app/aa_readings_25 - Clean - single readings/android/app/.cxx/RelWithDebInfo/2l231q3u/x86_64/CMakeFiles/rebuild_cache.dir

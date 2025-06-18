@@ -1,4 +1,3 @@
-// App-level build.gradle
 plugins {
     id "com.android.application"
     id "kotlin-android"
@@ -6,16 +5,19 @@ plugins {
     id "com.google.gms.google-services"
 }
 
-
-
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
 
 android {
-    namespace "com.example.aa_readings_25"
+    namespace "com.aareadingsandprayers.app" // Updated namespace
     compileSdk 34
     ndkVersion flutter.ndkVersion
-
+    
     defaultConfig {
-        applicationId "com.example.aa_readings_25"
+        applicationId "com.aareadingsandprayers.app"
         minSdkVersion 23
         targetSdkVersion 34
         versionCode flutter.versionCode
@@ -25,18 +27,50 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled true  // ✅ Enable Desugaring
     }
-
+    
     kotlinOptions {
         jvmTarget = "17"
     }
-
-
-
-
+    
+    lintOptions {
+        abortOnError false
+    }
+    
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+    
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            
+            // Enable native debug symbols with full debug info
+            ndk {
+                debugSymbolLevel 'FULL'
+            }
+        }
+    }
+    
+    // Configure native debug symbols
+    bundle {
+        language {
+            enableSplit = false
+        }
+        density {
+            enableSplit = false
+        }
+        abi {
+            enableSplit = true
         }
     }
 }
@@ -45,6 +79,23 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.5.0')
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-firestore'
+    
+    // Use firebase-analytics with specific exclusion of the conflicting ad dependency
+    implementation('com.google.firebase:firebase-analytics:21.6.1') {
+        exclude group: 'com.google.android.gms', module: 'play-services-ads-lite'
+    }
+    
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+    
+    // AndroidX Core for edge-to-edge support
+    implementation 'androidx.core:core-ktx:1.12.0'
+    
+    // If you need minimal ad consent functionality without actual ad implementation:
+    implementation('com.google.android.gms:play-services-base:18.2.0')
+    
+    // Explicitly exclude any direct ad implementations
+    // No implementation of 'com.google.android.gms:play-services-ads'
+    // No implementation of 'com.google.android.gms:play-services-ads-lite'
 }
 
 flutter {

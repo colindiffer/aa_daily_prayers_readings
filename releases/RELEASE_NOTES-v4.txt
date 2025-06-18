@@ -1,0 +1,85 @@
+=====================================
+AA READINGS 2025 - RELEASE NOTES
+=====================================
+
+Version 1.0.0+4 (May 29, 2025)
+
+----------------------------------
+APP OVERVIEW
+----------------------------------
+AA Readings 2025 provides daily readings from Alcoholics Anonymous literature in a clean, accessible format. Get inspired daily with powerful messages that support your journey in recovery.
+
+----------------------------------
+KEY FEATURES
+----------------------------------
+
+DAILY READINGS
+- Access a curated collection of AA readings
+- View readings organized by day and category
+- Save favorite readings for quick access
+- Share readings with others via text or email
+
+ADVANCED TEXT-TO-SPEECH
+- Listen to readings with high-quality voice narration
+- Choose between male and female voices (UK English)
+- Adjust reading speed to your preference
+- Play selected readings in sequence with smooth transitions
+- Visual indicators show which reading is currently playing
+
+SMART NOTIFICATIONS
+- Schedule daily reading reminders
+- Customize notification time to fit your schedule
+- Receive reliable notifications even when the app is closed
+- Easy toggle on/off directly from settings
+
+PRIVACY-FOCUSED
+- No ads or user tracking by default
+- Complete control over analytics data sharing
+- Clear consent management system
+- All reading data stored locally on your device
+
+----------------------------------
+TECHNICAL IMPROVEMENTS
+----------------------------------
+
+TTS ENGINE ENHANCEMENTS
+- Fixed issues with sequential reading playback
+- Enhanced voice quality with dedicated British English voices
+- Improved transitions between readings with optimized timing
+- Added comprehensive error handling for TTS operations
+
+UI IMPROVEMENTS
+- Intuitive touch interactions for playing readings
+- Dynamic animations for currently playing readings
+- Responsive design works on all screen sizes
+- Clear visual indicators for selection and playback status
+
+SYSTEM OPTIMIZATIONS
+- Reduced battery usage with optimized background processes
+- Faster app startup and reading load times
+- Enhanced notification reliability on all Android versions
+- Comprehensive logging system for troubleshooting
+
+----------------------------------
+REQUIREMENTS
+----------------------------------
+- Android 6.0 (Marshmallow) or higher
+- 50MB free storage space
+- Internet connection for initial setup (optional for daily use)
+
+----------------------------------
+COMING SOON
+----------------------------------
+- Additional reading collections
+- Custom reading lists
+- Dark mode and additional themes
+- iOS version
+
+----------------------------------
+SUPPORT
+----------------------------------
+For any questions or feedback, please contact us at support@aareadings.com or visit our website at www.aareadings.com
+
+----------------------------------
+
+Thank you for using AA Readings 2025. We hope this app serves as a valuable companion on your journey.

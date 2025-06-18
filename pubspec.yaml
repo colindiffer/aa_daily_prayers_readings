@@ -1,31 +1,74 @@
 name: aa_readings_25
-description: "A new Flutter project."
+description: AA Daily Readings App
+
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.5.2+2
 
 environment:
-  sdk: ^3.6.1
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_tts: ^4.2.1
-  firebase_core: ^3.10.1
-  firebase_auth: ^5.4.1
-  cloud_firestore: ^5.6.2
-  shared_preferences: ^2.2.2
+  
+  # Core utilities
+  intl: ^0.20.2
+  shared_preferences: ^2.2.3
+  timezone: ^0.10.0
+  permission_handler: ^11.4.0
+  
+  # UI and features
+  flutter_tts: ^4.2.2
+  cupertino_icons: ^1.0.2
+  flutter_local_notifications: ^18.0.1
+  
+  # Firebase services
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.17.4
+  cloud_firestore: ^4.15.4
+  firebase_analytics: ^10.8.5  # External services
+  url_launcher: ^6.2.4
+  google_mobile_ads: ^5.1.0
+  
+  # App utilities
+  package_info_plus: ^4.2.0
+  share_plus: ^7.2.1
+  patch_package: ^0.0.5
+  
+  # Development tools
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
-  flutter_launcher_icons: ^0.14.3
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  mockito: ^5.4.3
+  build_runner: ^2.4.8
+  flutter_lints: ^2.0.0
+  script_runner: ^0.4.0  # Add this package
 
 flutter:
   uses-material-design: true
+  assets:
+    # Comment out or remove the line referencing app_logo.png
+    # - assets/images/app_logo.png
+    - assets/icon/AA-Readings-Image.png
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/icon/alcoholics-anonymous-seeklogo.png"
+  image_path: "assets/icon/AA-Readings-Image.png"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/icon/AA-Readings-Image.png"
+
+scripts:
+  # Basic mirroring
+  mirror: scrcpy --max-size 1024 --bit-rate 8M
+  # Record screen while mirroring
+  mirror_record: scrcpy --max-size 1024 --bit-rate 8M --record screen_recording.mp4
+  # Wireless mirroring (run after connecting via USB first)
+  mirror_wireless: scrcpy --max-size 1024 --bit-rate 4M --wireless
+  # High quality mirroring
+  mirror_hq: scrcpy --max-size 1920 --bit-rate 12M
+  # Setup instructions
+  mirror_setup: 'echo "To install scrcpy on Windows: winget install Genymobile.scrcpy or visit https://github.com/Genymobile/scrcpy#windows"'
