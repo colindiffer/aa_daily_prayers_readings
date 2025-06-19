@@ -12,6 +12,7 @@ import 'analytics/consent_manager.dart';
 import 'screens/consent_settings_screen.dart';
 import 'screens/about_page.dart';
 import 'services/logger_service.dart';
+import 'services/review_request_service.dart';
 
 void main() async {
   // Ensure Flutter is initialized
@@ -38,8 +39,17 @@ void main() async {
 
   // Initialize Analytics Service (which initializes consent manager)
   final analyticsService = AnalyticsService();
-  await analyticsService.initialize(); // Initialize timezones and notifications
+  await analyticsService.initialize(); 
 
+  // Initialize Review Request Service
+  try {
+    await ReviewRequestService.initialize();
+    debugPrint('Review request service initialized');
+  } catch (e) {
+    debugPrint('Review request service initialization error: $e');
+  }
+
+  // Initialize timezones and notifications
   try {
     // Initialize notifications service
     await NotificationService().initNotification();

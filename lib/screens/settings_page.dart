@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/tts_service.dart';
 import '../services/notification_service.dart';
+import 'review_request_debug_screen.dart';
 
 class SettingsPage extends StatefulWidget {
   final DateTime? sobrietyDate;
@@ -285,6 +286,35 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
             const SizedBox(height: 32),
+            
+            // Debug section (only show in debug mode)
+            if (const bool.fromEnvironment('dart.vm.product') == false) ...[
+              const Divider(),
+              const SizedBox(height: 16),
+              const Text(
+                'Debug Options',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ReviewRequestDebugScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.bug_report),
+                label: const Text('Review Request Debug'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+            
             Center(
               child: ElevatedButton(
                 onPressed: () {

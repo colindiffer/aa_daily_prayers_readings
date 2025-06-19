@@ -3,6 +3,7 @@ import '../widgets/reading_list_view.dart';
 import '../widgets/sobriety_timer.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/scroll_arrows.dart';
+import '../widgets/review_request_banner.dart';
 import '../services/tts_service.dart';
 import '../data/readings.dart';
 import '../utils/app_data_manager.dart';
@@ -265,6 +266,14 @@ class _ReadingsScreenState extends State<ReadingsScreen> {
               ),
             ],
           ),
+          // Review request banner
+          const Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: ReviewRequestBanner(),
+          ),
+          // Scroll arrows
           Positioned(
             top: 10,
             left: MediaQuery.of(context).size.width / 2 - 20,
