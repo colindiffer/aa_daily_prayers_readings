@@ -79,7 +79,7 @@ workflows:
         script: |
           flutter build ipa --release \
             --build-name=8.1.1 \
-            --build-number=$(($(app-store-connect get-latest-app-store-build-number 6747896671) + 1)) \
+            --build-number=11 \
             --verbose
     artifacts:
       - build/ios/ipa/*.ipa
@@ -93,10 +93,10 @@ workflows:
           success: true
           failure: true
       app_store_connect:
-        auth: integration
-        apple_id: 6747896671
+        auth: integration  # Uses the HR5L39LBUF integration configured in Codemagic
         submit_to_testflight: true
         submit_to_app_store: false
+        # Note: App ID 6747896671 is configured in the App Store Connect integration
 
   # Simple test workflow to verify build works
   simple-test:
