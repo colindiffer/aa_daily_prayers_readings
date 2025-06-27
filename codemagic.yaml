@@ -11,6 +11,7 @@ workflows:
         distribution_type: app_store
         bundle_identifier: com.aareadingsandprayers.aaReadings25
       vars:
+        APP_STORE_APPLE_ID: 6747896671
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
     triggering:
@@ -45,7 +46,7 @@ workflows:
         script: |
           flutter build ipa --release \
             --build-name=8.1.1 \
-            --build-number=10
+            --build-number=$(($(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID") + 1))
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
