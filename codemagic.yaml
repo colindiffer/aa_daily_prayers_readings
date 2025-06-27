@@ -1,0 +1,159 @@
+workflows:
+  ios-workflow:
+    name: iOS Workflow
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    environment:
+      flutter: stable
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.aareadingsandprayers.aaReadings25
+      vars:
+        APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID
+        APP_STORE_CONNECT_KEY_IDENTIFIER: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        APP_STORE_CONNECT_PRIVATE_KEY: $APP_STORE_CONNECT_PRIVATE_KEY
+        CERTIFICATE_PRIVATE_KEY: $CERTIFICATE_PRIVATE_KEY
+        XCODE_WORKSPACE: "ios/Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+    triggering:
+      events:
+        - push
+        - tag
+        - pull_request
+      branch_patterns:
+        - pattern: 'main'
+          include: true
+          source: true
+        - pattern: 'develop'
+          include: true
+          source: true
+    scripts:
+      - name: Set up local.properties
+        script: |
+          echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Install pods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Flutter analyze
+        script: |
+          flutter analyze
+      - name: Flutter test
+        script: |
+          flutter test
+      - name: Flutter build ipa
+        script: |
+          flutter build ipa --release \
+            --build-name=8.1.1 \
+            --build-number=$(($(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID") + 1))
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - colindiffer@gmail.com  # Replace with your email
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        auth: integration
+        submit_to_app_store: false  # Set to true when ready for submission
+        cancel_previous_submissions: true
+        submit_to_testflight: true
+
+  android-workflow:
+    name: Android Workflow
+    instance_type: linux_x2
+    max_build_duration: 120
+    environment:
+      flutter: stable
+      android_signing:
+        - keystore_reference
+      groups:
+        - google_play  # <-- Add your google_play group here
+    triggering:
+      events:
+        - push
+        - tag
+        - pull_request
+      branch_patterns:
+        - pattern: 'main'
+          include: true
+          source: true
+        - pattern: 'develop'
+          include: true
+          source: true
+    scripts:
+      - name: Set up local.properties
+        script: |
+          echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Build APK with Flutter
+        script: |
+          flutter build apk --release --build-name=8.1.1 --build-number=10
+      - name: Build AAB with Flutter
+        script: |
+          flutter build appbundle --release --build-name=8.1.1 --build-number=10
+    artifacts:
+      - build/app/outputs/**/*.apk
+      - build/app/outputs/**/*.aab
+      - build/app/outputs/**/mapping.txt
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - colindiffer@gmail.com  # Replace with your email
+        notify:
+          success: true
+          failure: true
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal  # Options: internal, alpha, beta, production
+        submit_as_draft: true
+
+  # Development workflow for quick testing
+  development-workflow:
+    name: Development Build
+    instance_type: linux_x2
+    max_build_duration: 60
+    environment:
+      flutter: stable
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'feature/*'
+          include: true
+          source: true
+        - pattern: 'fix/*'
+          include: true
+          source: true
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Flutter analyze
+        script: |
+          flutter analyze
+      - name: Flutter test
+        script: |
+          flutter test
+      - name: Build debug APK
+        script: |
+          flutter build apk --debug
+    artifacts:
+      - build/app/outputs/**/*.apk
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - colindiffer@gmail.com  # Replace with your email
+        notify:
+          success: false
+          failure: true
