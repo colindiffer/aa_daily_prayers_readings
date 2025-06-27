@@ -1,5 +1,18 @@
 workflows:
-  # Simple test workflow to debug issues
+  ios-simulator-workflow:
+    name: iOS Simulator Build
+    instance_type: mac_mini_m2
+    max_build_duration: 20
+    environment:
+      flutter: stable
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Build for simulator
+        script: flutter build ios --debug --simulator
+    artifacts:
+      - build/ios/iphonesimulator/Runner.app
+
   ios-debug-workflow:
     name: iOS Debug Build
     instance_type: mac_mini_m2
@@ -43,7 +56,7 @@ workflows:
     instance_type: mac_mini_m2
     max_build_duration: 60
     integrations:
-      app_store_connect: HR5L39LBUF  # Using your Apple Developer Portal integration
+      app_store_connect: HR5L39LBUF
     environment:
       flutter: stable
       ios_signing:
@@ -93,12 +106,10 @@ workflows:
           success: true
           failure: true
       app_store_connect:
-        auth: integration  # Uses the HR5L39LBUF integration configured in Codemagic
+        auth: integration
         submit_to_testflight: true
         submit_to_app_store: false
-        # Note: App ID 6747896671 is configured in the App Store Connect integration
 
-  # Simple test workflow to verify build works
   simple-test:
     name: Simple Test Build
     instance_type: mac_mini_m2
