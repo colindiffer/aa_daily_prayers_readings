@@ -29,12 +29,12 @@ workflows:
         script: |
           flutter build ipa --release \
             --build-name=1.0.0 \
-            --build-number=$(($(app-store-connect get-latest-app-store-build-number 6747896671) + 1))
+            --build-number=$(($(app-store-connect get-latest-app-store-build-number Encrypted($APP_STORE_APPLE_ID)) + 1))
     artifacts:
       - build/ios/ipa/*.ipa
     publishing:
       app_store_connect:
         auth: integration
-        apple_id: 6747896671
+        apple_id: Encrypted($APP_STORE_APPLE_ID)
         submit_to_testflight: true
         submit_to_app_store: false
