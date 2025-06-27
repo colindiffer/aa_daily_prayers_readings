@@ -1,12 +1,54 @@
 workflows:
+  # Simple test workflow to debug issues
+  ios-debug-workflow:
+    name: iOS Debug Build
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      flutter: stable
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "debug/*"
+          include: true
+          source: true
+    scripts:
+      - name: Environment check
+        script: |
+          echo "=== Environment Information ==="
+          flutter --version
+          xcodebuild -version
+          echo "=== Directory structure ==="
+          ls -la
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Flutter doctor
+        script: flutter doctor -v
+      - name: Build iOS (no code sign)
+        script: |
+          flutter build ios --release --no-codesign --verbose
+    artifacts:
+      - build/ios/iphoneos/Runner.app
+    publishing:
+      email:
+        recipients:
+          - colindiffer@gmail.com
+        notify:
+          success: true
+          failure: true
+
   ios-workflow:
     name: iOS Workflow
     instance_type: mac_mini_m2
     max_build_duration: 60
     integrations:
-      app_store_connect: codemagic  # <-- THIS LINE FIXES THE ERROR
+      app_store_connect: HR5L39LBUF  # Using your Apple Developer Portal integration
     environment:
       flutter: stable
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.aareadingsandprayers.aaReadings25
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
@@ -18,6 +60,12 @@ workflows:
           include: true
           source: true
     scripts:
+      - name: Set up environment
+        script: |
+          echo "Flutter version:"
+          flutter --version
+          echo "Xcode version:"
+          xcodebuild -version
       - name: Get dependencies
         script: flutter pub get
       - name: Analyze
@@ -30,13 +78,51 @@ workflows:
       - name: Build IPA
         script: |
           flutter build ipa --release \
-            --build-name=1.0.0 \
-            --build-number=$(($(app-store-connect get-latest-app-store-build-number Encrypted($APP_STORE_APPLE_ID)) + 1))
+            --build-name=8.1.1 \
+            --build-number=$(($(app-store-connect get-latest-app-store-build-number 6747896671) + 1)) \
+            --verbose
     artifacts:
       - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
     publishing:
+      email:
+        recipients:
+          - colindiffer@gmail.com
+        notify:
+          success: true
+          failure: true
       app_store_connect:
         auth: integration
-        apple_id: Encrypted($APP_STORE_APPLE_ID)
+        apple_id: 6747896671
         submit_to_testflight: true
         submit_to_app_store: false
+
+  # Simple test workflow to verify build works
+  simple-test:
+    name: Simple Test Build
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      flutter: stable
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "test"
+          include: true
+          source: true
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Build without signing
+        script: flutter build ios --release --no-codesign
+    artifacts:
+      - build/ios/iphoneos/Runner.app
+    publishing:
+      email:
+        recipients:
+          - colindiffer@gmail.com
+        notify:
+          success: true
+          failure: true
