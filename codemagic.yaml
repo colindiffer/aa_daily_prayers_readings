@@ -58,7 +58,6 @@ workflows:
           failure: true
       app_store_connect:
         auth: integration
-        bundle_id: $BUNDLE_ID
         apple_id: $APP_STORE_APPLE_ID
         submit_to_app_store: false
         submit_to_testflight: true
