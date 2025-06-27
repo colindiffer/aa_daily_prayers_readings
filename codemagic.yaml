@@ -11,10 +11,6 @@ workflows:
         distribution_type: app_store
         bundle_identifier: com.aareadingsandprayers.aaReadings25
       vars:
-        APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID
-        APP_STORE_CONNECT_KEY_IDENTIFIER: $APP_STORE_CONNECT_KEY_IDENTIFIER
-        APP_STORE_CONNECT_PRIVATE_KEY: $APP_STORE_CONNECT_PRIVATE_KEY
-        CERTIFICATE_PRIVATE_KEY: $CERTIFICATE_PRIVATE_KEY
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
     triggering:
@@ -49,7 +45,7 @@ workflows:
         script: |
           flutter build ipa --release \
             --build-name=8.1.1 \
-            --build-number=$(($(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID") + 1))
+            --build-number=10
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
@@ -65,6 +61,50 @@ workflows:
         auth: integration
         submit_to_app_store: false  # Set to true when ready for submission
         submit_to_testflight: true
+
+  # iOS Development/Testing workflow (no code signing required)
+  ios-test-workflow:
+    name: iOS Test Build (No Signing)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      flutter: stable
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'test/*'
+          include: true
+          source: true
+        - pattern: 'feature/*'
+          include: true
+          source: true
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Install pods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Flutter analyze
+        script: |
+          flutter analyze
+      - name: Flutter test
+        script: |
+          flutter test
+      - name: Build iOS without signing
+        script: |
+          flutter build ios --release --no-codesign
+    artifacts:
+      - build/ios/iphoneos/Runner.app
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - colindiffer@gmail.com
+        notify:
+          success: true
+          failure: true
 
   android-workflow:
     name: Android Workflow
