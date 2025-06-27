@@ -7,10 +7,8 @@ workflows:
       app_store_connect: codemagic
     environment:
       flutter: stable
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.aareadingsandprayers.aaReadings25
       vars:
+        BUNDLE_ID: com.aareadingsandprayers.aaReadings25
         APP_STORE_APPLE_ID: 6747896671
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
@@ -54,16 +52,17 @@ workflows:
     publishing:
       email:
         recipients:
-          - colindiffer@gmail.com  # Replace with your email
+          - colindiffer@gmail.com
         notify:
           success: true
           failure: true
       app_store_connect:
         auth: integration
-        submit_to_app_store: false  # Set to true when ready for submission
+        bundle_id: $BUNDLE_ID
+        apple_id: $APP_STORE_APPLE_ID
+        submit_to_app_store: false
         submit_to_testflight: true
 
-  # iOS Development/Testing workflow (no code signing required)
   ios-test-workflow:
     name: iOS Test Build (No Signing)
     instance_type: mac_mini_m2
@@ -116,7 +115,7 @@ workflows:
       android_signing:
         - keystore_reference
       groups:
-        - google_play  # <-- Add your google_play group here
+        - google_play
     triggering:
       events:
         - push
@@ -150,16 +149,15 @@ workflows:
     publishing:
       email:
         recipients:
-          - colindiffer@gmail.com  # Replace with your email
+          - colindiffer@gmail.com
         notify:
           success: true
           failure: true
       google_play:
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: internal  # Options: internal, alpha, beta, production
+        track: internal
         submit_as_draft: true
 
-  # Development workflow for quick testing
   development-workflow:
     name: Development Build
     instance_type: linux_x2
@@ -195,7 +193,7 @@ workflows:
     publishing:
       email:
         recipients:
-          - colindiffer@gmail.com  # Replace with your email
+          - colindiffer@gmail.com
         notify:
           success: false
           failure: true
