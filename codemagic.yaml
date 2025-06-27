@@ -8,8 +8,25 @@ workflows:
     scripts:
       - name: Get dependencies
         script: flutter pub get
-      - name: Build for simulator
-        script: flutter build ios --debug --simulator
+      - name: Flutter doctor
+        script: flutter doctor -v
+      - name: Check iOS setup
+        script: |
+          echo "=== iOS Simulator Information ==="
+          xcrun simctl list devices available
+      - name: Build for simulator with verbose output
+        script: |
+          flutter build ios --debug --simulator --verbose
+      - name: Check build output
+        script: |
+          echo "=== Build Directory Contents ==="
+          ls -la build/ios/iphonesimulator/
+          if [ -d "build/ios/iphonesimulator/Runner.app" ]; then
+            echo "Runner.app found!"
+            ls -la build/ios/iphonesimulator/Runner.app/
+          else
+            echo "Runner.app NOT found!"
+          fi
     artifacts:
       - build/ios/iphonesimulator/Runner.app
 
@@ -130,6 +147,87 @@ workflows:
         script: flutter build ios --release --no-codesign
     artifacts:
       - build/ios/iphoneos/Runner.app
+    publishing:
+      email:
+        recipients:
+          - colindiffer@gmail.com
+        notify:
+          success: true
+          failure: true
+
+  ios-debug-comprehensive:
+    name: iOS Debug with Error Checking
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      flutter: stable
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "ios-debug"
+          include: true
+          source: true
+    scripts:
+      - name: Environment check
+        script: |
+          echo "=== Environment Information ==="
+          flutter --version
+          flutter doctor -v
+          xcodebuild -version
+          echo "=== iOS Simulators ==="
+          xcrun simctl list devices available
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Check pubspec and iOS config
+        script: |
+          echo "=== Pubspec.yaml version ==="
+          cat pubspec.yaml | grep version
+          echo "=== iOS Bundle ID ==="
+          grep -A 5 -B 5 "PRODUCT_BUNDLE_IDENTIFIER" ios/Runner.xcodeproj/project.pbxproj || echo "Bundle ID not found"
+          echo "=== iOS Info.plist ==="
+          head -20 ios/Runner/Info.plist
+      - name: Analyze code
+        script: |
+          flutter analyze --no-pub
+      - name: Run tests
+        script: |
+          flutter test --no-pub || echo "Some tests failed, continuing..."
+      - name: Check for iOS-specific issues
+        script: |
+          echo "=== Checking for common iOS issues ==="
+          echo "Checking Firebase configuration..."
+          if [ -f "ios/Runner/GoogleService-Info.plist" ]; then
+            echo "✅ GoogleService-Info.plist found"
+            echo "Checking if it has valid content..."
+            grep -q "PROJECT_ID" ios/Runner/GoogleService-Info.plist && echo "✅ Firebase config looks valid" || echo "❌ Firebase config may be invalid"
+          else
+            echo "❌ GoogleService-Info.plist missing"
+          fi
+          echo "Checking permissions in Info.plist..."
+          grep -q "NSMicrophoneUsageDescription" ios/Runner/Info.plist && echo "✅ Microphone permission found" || echo "❌ Microphone permission missing"
+      - name: Build iOS with detailed logging
+        script: |
+          echo "=== Building iOS app ==="
+          flutter build ios --debug --no-codesign --verbose 2>&1 | tee ios_build.log
+          echo "=== Build completed ==="
+      - name: Check build results
+        script: |
+          echo "=== Build Results ==="
+          if [ -d "build/ios/iphoneos/Runner.app" ]; then
+            echo "✅ iOS app built successfully"
+            echo "App contents:"
+            ls -la build/ios/iphoneos/Runner.app/
+            echo "App size:"
+            du -sh build/ios/iphoneos/Runner.app/
+          else
+            echo "❌ iOS app build failed"
+            echo "Build directory contents:"
+            ls -la build/ios/ || echo "Build directory doesn't exist"
+          fi
+    artifacts:
+      - build/ios/iphoneos/Runner.app
+      - ios_build.log
     publishing:
       email:
         recipients:
