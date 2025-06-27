@@ -1,31 +1,35 @@
 name: aa_readings_25
-description: "A new Flutter project."
+description: AA Daily Readings & Prayers
 publish_to: 'none'
-
-version: 1.0.0+1
+version: 8.1.1+10
 
 environment:
-  sdk: ^3.6.1
+  sdk: '^3.7.0'
+  flutter: ">=3.24.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_tts: ^4.2.1
-  firebase_core: ^3.10.1
-  firebase_auth: ^5.4.1
-  cloud_firestore: ^5.6.2
+  cupertino_icons: ^1.0.6
   shared_preferences: ^2.2.2
+  intl: ^0.19.0
+  flutter_tts: ^4.0.2
+  firebase_core: ^2.24.2
+  firebase_analytics: ^10.8.0
+  package_info_plus: ^5.0.1
+  url_launcher: ^6.2.4
+  flutter_local_notifications: ^17.0.0
+  timezone: ^0.9.2
+  in_app_review: ^2.0.9
+  permission_handler: ^11.3.1
 
 dev_dependencies:
-  flutter_launcher_icons: ^0.14.3
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true
-
-flutter_icons:
-  android: true
-  ios: true
-  image_path: "assets/icon/alcoholics-anonymous-seeklogo.png"
+  assets:
+    - assets/images/
+    - assets/icon/

@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1038784008477:android:39764a2387b65dd1b911f4",
+        "mobilesdk_app_id": "1:1038784008477:android:133bfb823dda7883b911f4",
         "android_client_info": {
-          "package_name": "com.example.aa_readings_25"
+          "package_name": "com.aareadingsandprayers.app"
         }
       },
       "oauth_client": [],

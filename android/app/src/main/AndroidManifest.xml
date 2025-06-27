@@ -1,11 +1,51 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.aa_readings_25">
+    xmlns:tools="http://schemas.android.com/tools">
+    
+    <!-- Internet permission for URL launching and Play Store access -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    
+    <!-- Permissions for notifications & alarms -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/> <!-- For Android 11 and below -->
+    <!-- USE_EXACT_ALARM removed per Google Play policy -->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <!-- FOREGROUND_SERVICE_SCHEDULE_EXACT_ALARM removed per Google Play policy -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    
+    <!-- Permissions for background audio/TTS playback -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- Keep app alive during TTS playback -->
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
+    <!-- Additional permissions for reliable TTS background processing -->
+    <uses-permission android:name="android.permission.REQUEST_COMPANION_RUN_IN_BACKGROUND" />
+    <uses-permission android:name="android.permission.REQUEST_COMPANION_USE_DATA_IN_BACKGROUND" />
 
+    <!-- Remove advertising ID permissions for privacy compliance -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_AD_ID" tools:node="remove" />
+    
     <application
-        android:label="AA Readings 2025"
+        android:label="AA Daily Readings and Prayers"
+        android:enableOnBackInvokedCallback="true"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:requestLegacyExternalStorage="true"
+        android:usesCleartextTraffic="false"
+        android:allowAudioPlaybackCapture="true"
+        android:preserveLegacyExternalStorage="true">
 
+        <!-- Add AdMob Application ID -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -14,7 +54,10 @@
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:keepScreenOn="true"
+            android:showOnLockScreen="true"
+            android:turnScreenOn="true">
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
@@ -28,6 +71,52 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- Ensures scheduled notifications persist after reboot -->
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.receivers.ActionReceiver"
+            android:exported="true"/>
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.receivers.DismissedReceiver"
+            android:exported="true"/>
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
+            android:exported="true"/>
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.receivers.TimeZoneChangeReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+            </intent-filter>
+        </receiver>
+        
+        <service
+            android:name="com.dexterous.flutterlocalnotifications.services.NotificationService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="true"/>
+
+        <!-- TTS Foreground Service for background playback -->
+        <service
+            android:name=".TtsService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+
+        <!-- Add the property element INSIDE the application tag -->
+        <property
+            android:name="android.adservices.AD_SERVICES_CONFIG"
+            android:resource="@xml/ga_ad_services_config"
+            tools:replace="android:resource" />
     </application>
 
     <!-- Intent queries required for processing text actions -->

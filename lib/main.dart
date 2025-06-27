@@ -1,240 +1,122 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
-import 'data/readings.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'screens/readings_screen.dart';
+import 'screens/onboarding_screen.dart';
+import 'services/tts_service.dart';
+import 'services/analytics_consent_service.dart';
 
-void main() {
+void main() async {
+  // Ensure Flutter is initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp();
+
+  // Initialize Analytics Consent Service
+  await AnalyticsConsentService().initializeAnalytics();
+
+  // Initialize TTS Service
+  try {
+    final ttsService = TTSService();
+    await ttsService.initialize();
+  } catch (e) {
+    // TTS initialization error
+  }
+
+  // Run the app
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AA Readings',
+      title: 'AA Daily Readings & Prayers',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const ReadingsScreen(),
+      home: const AppInitializer(),
     );
   }
 }
 
-class ReadingsScreen extends StatefulWidget {
-  const ReadingsScreen({super.key});
+class AppInitializer extends StatefulWidget {
+  const AppInitializer({super.key});
 
   @override
-  State<ReadingsScreen> createState() => _ReadingsScreenState();
+  State<AppInitializer> createState() => _AppInitializerState();
 }
 
-class _ReadingsScreenState extends State<ReadingsScreen> {
-  final FlutterTts flutterTts = FlutterTts();
-  Map<String, bool> selectedReadings = {};
-  bool isPlaying = false;
-  bool shouldStop = false;
-  bool isEditMode = false;
-
+class _AppInitializerState extends State<AppInitializer> {
   @override
   void initState() {
     super.initState();
-    for (var reading in readings) {
-      selectedReadings[reading['title']] = false;
-    }
+    _checkOnboardingStatus();
   }
 
-  Future<void> _speak(String title, String text) async {
-    await flutterTts.stop(); // Stop any ongoing playback
-    await flutterTts.setLanguage("en-US");
-    await flutterTts.setPitch(1.0);
+  Future<void> _checkOnboardingStatus() async {
+    // Add a small delay for splash effect
+    await Future.delayed(const Duration(milliseconds: 500));
 
-    await flutterTts.speak(title);
-    await flutterTts.awaitSpeakCompletion(true);
+    final prefs = await SharedPreferences.getInstance();
+    final hasCompletedOnboarding =
+        prefs.getBool('onboarding_completed') ?? false;
 
-    await flutterTts.speak(text);
-    await flutterTts.awaitSpeakCompletion(true);
-  }
-
-  Future<void> _playSelectedReadings() async {
-    setState(() {
-      isPlaying = true;
-      shouldStop = false;
-    });
-
-    for (var reading in readings) {
-      if (selectedReadings[reading['title']] == true) {
-        if (shouldStop) break; // Stop if the user presses "Stop All"
-        await _speak(reading['title']!, reading['content']!);
+    if (mounted) {
+      if (hasCompletedOnboarding) {
+        // Go directly to main app
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const ReadingsScreen()),
+        );
+      } else {
+        // Show onboarding
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+        );
       }
     }
-
-    setState(() {
-      isPlaying = false;
-    });
-  }
-
-  void _stopAll() {
-    setState(() {
-      shouldStop = true;
-      isPlaying = false;
-    });
-    flutterTts.stop();
-  }
-
-  void _addReading() {
-    String newTitle = '';
-    String newContent = '';
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Add New Reading'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                decoration: const InputDecoration(labelText: 'Title'),
-                onChanged: (value) {
-                  newTitle = value;
-                },
-              ),
-              TextField(
-                decoration: const InputDecoration(labelText: 'Content'),
-                maxLines: 5,
-                onChanged: (value) {
-                  newContent = value;
-                },
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                if (newTitle.isNotEmpty && newContent.isNotEmpty) {
-                  setState(() {
-                    readings.add({
-                      'title': newTitle,
-                      'content': newContent,
-                      'protected': false, // New readings are not protected
-                    });
-                    selectedReadings[newTitle] = false;
-                  });
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Text('Add'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _toggleEditMode() {
-    setState(() {
-      isEditMode = !isEditMode;
-    });
-  }
-
-  void _deleteReading(int index) {
-    if (readings[index]['protected'] == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Cannot delete protected readings."),
-        ),
-      );
-      return; // Do nothing if the reading is protected
-    }
-    setState(() {
-      selectedReadings.remove(readings[index]['title']);
-      readings.removeAt(index);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('AA Readings'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _addReading,
-            tooltip: 'Add Reading',
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.blue.shade300, Colors.blue.shade600],
           ),
-          IconButton(
-            icon: Icon(isEditMode ? Icons.check : Icons.edit),
-            onPressed: _toggleEditMode,
-            tooltip: isEditMode ? 'Finish Editing' : 'Edit Readings',
+        ),
+        child: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.book, size: 80, color: Colors.white),
+              SizedBox(height: 20),
+              Text(
+                'AA Daily Readings',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                '& Prayers',
+                style: TextStyle(fontSize: 20, color: Colors.white70),
+              ),
+              SizedBox(height: 40),
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            ],
           ),
-        ],
-      ),
-      body: ReorderableListView.builder(
-        itemCount: readings.length,
-        onReorder: (oldIndex, newIndex) {
-          if (oldIndex < newIndex) {
-            newIndex -= 1;
-          }
-          setState(() {
-            final reading = readings.removeAt(oldIndex);
-            readings.insert(newIndex, reading);
-          });
-        },
-        itemBuilder: (context, index) {
-          final reading = readings[index];
-          return ListTile(
-            key: ValueKey(reading['title']),
-            leading: isEditMode
-                ? IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: () => _deleteReading(index),
-              tooltip: 'Delete',
-            )
-                : Checkbox(
-              value: selectedReadings[reading['title']],
-              onChanged: (bool? value) {
-                setState(() {
-                  selectedReadings[reading['title']] = value ?? false;
-                });
-              },
-            ),
-            title: Text(reading['title']!),
-            trailing: isEditMode
-                ? const Icon(Icons.drag_handle)
-                : IconButton(
-              icon: const Icon(Icons.play_arrow, color: Colors.lightBlue),
-              onPressed: () => _speak(reading['title']!, reading['content']!),
-              tooltip: 'Play',
-            ),
-          );
-        },
-      ),
-      bottomNavigationBar: isEditMode
-          ? null
-          : Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.lightBlue),
-              onPressed: isPlaying ? null : _playSelectedReadings,
-              child: const Text('Play Selected Readings'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.lightBlue),
-              onPressed: _stopAll,
-              child: const Text('Stop All'),
-            ),
-          ],
         ),
       ),
     );

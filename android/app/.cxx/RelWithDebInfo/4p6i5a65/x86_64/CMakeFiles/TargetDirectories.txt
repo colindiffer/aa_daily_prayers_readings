@@ -1,0 +1,2 @@
+C:/Users/ColinDiffer/app/aa_readings_25 - multiple - to publish/android/app/.cxx/RelWithDebInfo/4p6i5a65/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/ColinDiffer/app/aa_readings_25 - multiple - to publish/android/app/.cxx/RelWithDebInfo/4p6i5a65/x86_64/CMakeFiles/rebuild_cache.dir

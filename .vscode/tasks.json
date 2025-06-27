@@ -1,0 +1,56 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Flutter Run",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"run"
+			],
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "Flutter Build iOS (No Code Sign)",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"build",
+				"ios",
+				"--release",
+				"--no-codesign"
+			],
+			"group": "build",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Flutter Build iOS Simulator",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"build",
+				"ios",
+				"--simulator"
+			],
+			"group": "build",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Flutter Run iOS Simulator",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"run",
+				"-d",
+				"ios"
+			],
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

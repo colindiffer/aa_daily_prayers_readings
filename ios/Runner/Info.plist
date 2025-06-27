@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Aa Readings 25</string>
+	<string>AA Daily Readings</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,5 +45,24 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<!-- Permissions for AA Daily Readings -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app uses text-to-speech to read daily content aloud. Microphone access may be required by the speech engine.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>This app may use local network to download voice models for text-to-speech functionality.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>This app sends daily reminders for your spiritual readings and prayers.</string>
+	
+	<!-- Background processing -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>background-processing</string>
+	</array>
+	
+	<!-- App category -->
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.lifestyle</string>
 </dict>
 </plist>
