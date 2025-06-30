@@ -79,7 +79,6 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.aareadingsandprayers.aaReadings25
-        automatic: true
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
