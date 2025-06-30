@@ -79,11 +79,11 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.aareadingsandprayers.aaReadings25
-        certificate: aa_readings_prod_cert
-        provisioning_profile: AAReadingsAppStore
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
+        CM_CERTIFICATE: aa_readings_prod_cert
+        CM_PROVISIONING_PROFILE: AAReadingsAppStore
     triggering:
       events:
         - push
