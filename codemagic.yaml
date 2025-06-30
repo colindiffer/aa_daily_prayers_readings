@@ -42,8 +42,8 @@ workflows:
           echo "Available provisioning profiles:"
           ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ || echo "No profiles directory"
           echo "Checking for specific certificate types:"
-          security find-identity -v -p codesigning | grep -i "Apple Distribution"
-          security find-identity -v -p codesigning | grep -i "Apple Development"
+          security find-identity -v -p codesigning | grep -i "Apple Distribution" || echo "No Apple Distribution found"
+          security find-identity -v -p codesigning | grep -i "Apple Development" || echo "No Apple Development found"
       - name: Build IPA
         script: |
           # Set explicit code signing for release build
