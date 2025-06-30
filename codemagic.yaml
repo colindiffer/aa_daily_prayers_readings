@@ -56,7 +56,31 @@ workflows:
             --build-name=8.1.1 \
             --build-number=11 \
             --verbose
+      - name: Manual certificate installation
+        script: |
+          echo "=== Manual Certificate Installation ==="
+          echo "Checking all environment variables for certificates/profiles:"
+          env | sort
+          echo "========================"
+          
+          # Try to find Codemagic certificate files
+          echo "Looking for certificate files in common locations:"
+          find /tmp -name "*.p12" -o -name "*.cer" -o -name "*.mobileprovision" 2>/dev/null || echo "No certificate files found in /tmp"
+          find ~/Library -name "*.p12" -o -name "*.cer" -o -name "*.mobileprovision" 2>/dev/null || echo "No certificate files found in ~/Library"
+          
+          # Check if certificates are in keychain
+          echo "Certificates in default keychain:"
+          security find-identity -v -p codesigning
+          
       - name: Debug code signing setup
+        script: |
+          echo "=== Code Signing Debug ==="
+          echo "Distribution type: app_store"
+          echo "Bundle ID: com.aareadingsandprayers.aaReadings25"
+          echo "Available certificates in keychain:"
+          security find-identity -v -p codesigning || echo "No certificates in keychain"
+          echo "Available provisioning profiles:"
+          find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" 2>/dev/null | head -10 || echo "No provisioning profiles found"
         script: |
           echo "=== Code Signing Debug ==="
           echo "Distribution type: app_store"
