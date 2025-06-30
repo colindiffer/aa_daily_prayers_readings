@@ -33,15 +33,15 @@ class _ReadingsScreenState extends State<ReadingsScreen> {
   void initState() {
     super.initState();
     debugPrint('ReadingsScreen initState called');
-    
+
     try {
       _ttsService = TTSService();
       debugPrint('TTS Service initialized');
-      
+
       _scrollController = ScrollController();
       _scrollController.addListener(_updateScrollArrows);
       debugPrint('Scroll controller initialized');
-      
+
       _loadAppData();
       debugPrint('App data loading started');
     } catch (e, stackTrace) {
@@ -55,19 +55,19 @@ class _ReadingsScreenState extends State<ReadingsScreen> {
       debugPrint('Loading app data...');
       final appData = await AppDataManager.loadAppData();
       debugPrint('App data loaded: ${appData.keys}');
-      
+
       setState(() {
         final savedReadings =
             appData['userReadings'] as List<Map<String, dynamic>>;
         userReadings = savedReadings.isEmpty ? readings : savedReadings;
         sobrietyDate = appData['sobrietyDate'];
       });
-      
+
       debugPrint('App data set - readings count: ${userReadings.length}');
     } catch (e, stackTrace) {
       debugPrint('Error loading app data: $e');
       debugPrint('Stack trace: $stackTrace');
-      
+
       // Fallback to default readings
       setState(() {
         userReadings = readings;
