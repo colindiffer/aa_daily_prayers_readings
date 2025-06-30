@@ -10,8 +10,6 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.aareadingsandprayers.aaReadings25
-        certificate_reference: fresh_dist_cert
-        profile_reference: AAReadings_AppStore_Clean_2025
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
@@ -48,10 +46,15 @@ workflows:
           security find-identity -v -p codesigning | grep -i "Apple Development" || echo "No Apple Development found"
       - name: Build IPA
         script: |
+          # Set environment variables for code signing
+          export DEVELOPMENT_TEAM="25X2WSWQG6"
+          export CODE_SIGN_IDENTITY="Apple Distribution: Colin Differ (25X2WSWQG6)"
+          
           # Build without code signing first, let Codemagic handle signing
           flutter build ios --release --no-codesign \
             --build-name=8.1.1 \
             --build-number=11
+          
           # Then create IPA with Codemagic's code signing
           flutter build ipa --release \
             --build-name=8.1.1 \
