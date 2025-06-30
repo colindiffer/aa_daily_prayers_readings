@@ -13,6 +13,8 @@ workflows:
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
+        FCI_CERTIFICATE: aa_readings_prod_cert
+        FCI_PROVISIONING_PROFILE: AAReadingsAppStore
     triggering:
       events:
         - push
@@ -34,10 +36,39 @@ workflows:
           find . -name "Podfile" -execdir pod install \;
       - name: Build IPA
         script: |
+          echo "=== Attempting to build iOS app with manual certificate handling ==="
+          
+          # First, try to build without code signing to see if the issue is with the app itself
+          echo "Step 1: Building without code signing..."
+          flutter build ios --release --no-codesign --verbose
+          
+          if [ ! -d "build/ios/iphoneos/Runner.app" ]; then
+            echo "❌ Failed to build Runner.app - this is not a signing issue"
+            exit 1
+          fi
+          
+          echo "✅ Runner.app built successfully without signing"
+          echo "Step 2: Checking available certificates again..."
+          security find-identity -v -p codesigning
+          
+          echo "Step 3: Attempting to build IPA with signing..."
           flutter build ipa --release \
             --build-name=8.1.1 \
             --build-number=11 \
             --verbose
+      - name: Debug code signing setup
+        script: |
+          echo "=== Code Signing Debug ==="
+          echo "Distribution type: app_store"
+          echo "Bundle ID: com.aareadingsandprayers.aaReadings25"
+          echo "Available certificates in keychain:"
+          security find-identity -v -p codesigning || echo "No certificates in keychain"
+          echo "Available provisioning profiles:"
+          find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" 2>/dev/null | head -10 || echo "No provisioning profiles found"
+          echo "Codemagic environment variables:"
+          env | grep -E "(CERTIFICATE|PROFILE|SIGNING)" | sort || echo "No signing environment variables"
+          echo "Attempting to list all environment variables containing 'CM':"
+          env | grep CM | sort || echo "No CM variables"
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
