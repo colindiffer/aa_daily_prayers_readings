@@ -32,20 +32,48 @@ class _ReadingsScreenState extends State<ReadingsScreen> {
   @override
   void initState() {
     super.initState();
-    _ttsService = TTSService();
-    _scrollController = ScrollController();
-    _scrollController.addListener(_updateScrollArrows);
-    _loadAppData();
+    debugPrint('ReadingsScreen initState called');
+    
+    try {
+      _ttsService = TTSService();
+      debugPrint('TTS Service initialized');
+      
+      _scrollController = ScrollController();
+      _scrollController.addListener(_updateScrollArrows);
+      debugPrint('Scroll controller initialized');
+      
+      _loadAppData();
+      debugPrint('App data loading started');
+    } catch (e, stackTrace) {
+      debugPrint('Error in ReadingsScreen initState: $e');
+      debugPrint('Stack trace: $stackTrace');
+    }
   }
 
   Future<void> _loadAppData() async {
-    final appData = await AppDataManager.loadAppData();
-    setState(() {
-      final savedReadings =
-          appData['userReadings'] as List<Map<String, dynamic>>;
-      userReadings = savedReadings.isEmpty ? readings : savedReadings;
-      sobrietyDate = appData['sobrietyDate'];
-    });
+    try {
+      debugPrint('Loading app data...');
+      final appData = await AppDataManager.loadAppData();
+      debugPrint('App data loaded: ${appData.keys}');
+      
+      setState(() {
+        final savedReadings =
+            appData['userReadings'] as List<Map<String, dynamic>>;
+        userReadings = savedReadings.isEmpty ? readings : savedReadings;
+        sobrietyDate = appData['sobrietyDate'];
+      });
+      
+      debugPrint('App data set - readings count: ${userReadings.length}');
+    } catch (e, stackTrace) {
+      debugPrint('Error loading app data: $e');
+      debugPrint('Stack trace: $stackTrace');
+      
+      // Fallback to default readings
+      setState(() {
+        userReadings = readings;
+        sobrietyDate = null;
+      });
+    }
   }
 
   void _updateScrollArrows() {
