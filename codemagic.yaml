@@ -41,11 +41,17 @@ workflows:
           security find-identity -v -p codesigning
           echo "Available provisioning profiles:"
           ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ || echo "No profiles directory"
+          echo "Checking for specific certificate types:"
+          security find-identity -v -p codesigning | grep -i "Apple Distribution"
+          security find-identity -v -p codesigning | grep -i "Apple Development"
       - name: Build IPA
         script: |
+          # Set explicit code signing for release build
+          export CODE_SIGN_STYLE="Manual"
           flutter build ipa --release \
             --build-name=8.1.1 \
             --build-number=11 \
+            --export-method=app-store \
             --verbose
     artifacts:
       - build/ios/ipa/*.ipa
