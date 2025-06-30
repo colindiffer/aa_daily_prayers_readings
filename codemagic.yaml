@@ -76,9 +76,6 @@ workflows:
       app_store_connect: HR5L39LBUF
     environment:
       flutter: stable
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.aareadingsandprayers.aaReadings25
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
