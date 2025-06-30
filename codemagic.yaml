@@ -13,6 +13,8 @@ workflows:
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
+        # Force automatic code signing
+        CODE_SIGN_STYLE: "Automatic"
     triggering:
       events:
         - push
@@ -46,13 +48,19 @@ workflows:
           security find-identity -v -p codesigning | grep -i "Apple Development" || echo "No Apple Development found"
       - name: Build IPA
         script: |
-          # Set explicit code signing for release build
-          export CODE_SIGN_STYLE="Manual"
-          flutter build ipa --release \
-            --build-name=8.1.1 \
-            --build-number=11 \
-            --export-method=app-store \
-            --verbose
+          # Try using xcodebuild directly for more control
+          flutter build ios --release --no-codesign
+          cd ios
+          xcodebuild -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -destination generic/platform=iOS \
+            -archivePath build/Runner.xcarchive \
+            archive
+          xcodebuild -exportArchive \
+            -archivePath build/Runner.xcarchive \
+            -exportPath build \
+            -exportOptionsPlist exportOptions.plist
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
