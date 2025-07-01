@@ -10,6 +10,8 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.aareadingsandprayers.aaReadings25
+        # For automatic signing, Codemagic will fetch certificates from App Store Connect
+        # Remove the certificate and provisioning_profile lines and let Codemagic handle it
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
@@ -37,25 +39,10 @@ workflows:
       - name: Verify code signing
         script: |
           echo "=== Code Signing Verification ==="
-          echo "Available certificates:"
           security find-identity -v -p codesigning
-          echo "Available provisioning profiles:"
-          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ || echo "No profiles directory"
-          echo "Checking for specific certificate types:"
-          security find-identity -v -p codesigning | grep -i "Apple Distribution" || echo "No Apple Distribution found"
-          security find-identity -v -p codesigning | grep -i "Apple Development" || echo "No Apple Development found"
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ || echo "No profiles found"
       - name: Build IPA
         script: |
-          # Set environment variables for code signing
-          export DEVELOPMENT_TEAM="25X2WSWQG6"
-          export CODE_SIGN_IDENTITY="Apple Distribution: Colin Differ (25X2WSWQG6)"
-          
-          # Build without code signing first, let Codemagic handle signing
-          flutter build ios --release --no-codesign \
-            --build-name=8.1.1 \
-            --build-number=11
-          
-          # Then create IPA with Codemagic's code signing
           flutter build ipa --release \
             --build-name=8.1.1 \
             --build-number=11 \
@@ -74,4 +61,4 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
-        submit_to_app_store: false
+        submit_to_app_store: false 
