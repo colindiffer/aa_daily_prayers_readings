@@ -1,7 +1,7 @@
 name: aa_readings_25
 description: AA Daily Readings & Prayers
 publish_to: 'none'
-version: 8.1.1+10
+version: 8.1.2+11
 
 environment:
   sdk: '^3.7.0'

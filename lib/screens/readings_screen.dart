@@ -448,7 +448,7 @@ class _ReadingsScreenState extends State<ReadingsScreen> {
                   );
                 },
               ),
-              const RatingBanner(),
+              RatingBanner(key: ratingBannerKey),
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.only(

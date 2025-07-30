@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/tts_service.dart';
 import '../services/notification_service.dart';
+import '../widgets/rating_banner.dart';
 import 'voice_selection_screen_new.dart';
+import 'rating_demo_screen.dart';
 
 class SettingsPage extends StatefulWidget {
   final DateTime? sobrietyDate;
@@ -151,11 +154,75 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  Future<void> _triggerRatingBannerDemo() async {
+    try {
+      if (kDebugMode) print('Demo: Resetting rating banner state...');
+
+      // Reset rating state to make banner appear
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('has_rated_app');
+      await prefs.remove('rating_banner_dismissed');
+      await prefs.remove('last_dismissed_timestamp');
+
+      // Set usage conditions to trigger banner display
+      final now = DateTime.now().millisecondsSinceEpoch;
+      await prefs.setInt(
+        'first_launch_time',
+        now - (3 * 24 * 60 * 60 * 1000),
+      ); // 3 days ago
+      await prefs.setInt(
+        'app_launch_count',
+        5,
+      ); // 5 launches (triggers display)
+
+      if (kDebugMode) {
+        print('Demo: Reset complete');
+        print('  first_launch_time set to 3 days ago');
+        print('  app_launch_count set to 5');
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Rating banner state reset! Navigate back to main screen to see the banner.',
+            ),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 4),
+          ),
+        );
+
+        // Automatically navigate back to show the banner
+        Future.delayed(const Duration(seconds: 1), () {
+          if (mounted) {
+            Navigator.of(context).pop();
+            // Trigger refresh of the rating banner
+            Future.delayed(const Duration(milliseconds: 100), () {
+              if (kDebugMode)
+                print('Demo: Triggering rating banner refresh...');
+              ratingBannerKey.currentState?.refreshBannerState();
+            });
+          }
+        });
+      }
+    } catch (e) {
+      if (kDebugMode) print('Demo: Error resetting rating state: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error resetting rating state: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -404,6 +471,100 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
             const SizedBox(height: 32),
+
+            // Debug/Demo section (only visible in debug mode)
+            if (kDebugMode) ...[
+              const Divider(),
+              const SizedBox(height: 16),
+              const Text(
+                'Demo & Testing',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Card(
+                color: Colors.orange.shade50,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Rating Banner Demo',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Reset the rating state and trigger the banner to appear for testing.',
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: _triggerRatingBannerDemo,
+                          icon: const Icon(Icons.star_rate),
+                          label: const Text('Show Rating Banner'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Rating Demo Screen Access
+              Card(
+                color: Colors.blue.shade50,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Complete Rating System Testing',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Access the comprehensive rating system demo to test all features including in-app review API, Play Store links, and state management.',
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const RatingDemoScreen(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.science),
+                          label: const Text('Open Rating Demo Screen'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+
             Center(
               child: ElevatedButton(
                 onPressed: () {

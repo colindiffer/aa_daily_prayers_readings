@@ -34,6 +34,11 @@ class TTSService {
   bool _isMultipleReadingsMode =
       false; // Track if we're in multiple readings mode
 
+  // Voice caching to prevent repeated scanning
+  String? _cachedVoiceId;
+  VoiceGender? _cachedGender;
+  String? _cachedLanguage;
+
   // Fallback timer for TTS completion detection
   Timer? _completionTimer;
 
@@ -78,21 +83,27 @@ class TTSService {
   Future<void> _applyVoiceSelection() async {
     // Prevent voice changes during multiple readings mode
     if (_isMultipleReadingsMode) {
-      print('🎤 Voice selection blocked: Multiple readings in progress');
+      if (kDebugMode) {
+        print('🎤 Voice selection blocked: Multiple readings in progress');
+      }
       return;
     }
 
     try {
       final voices = await _flutterTts.getVoices;
       if (voices == null || voices.isEmpty) {
-        print('🎤 No voices available from TTS engine');
+        if (kDebugMode) {
+          print('🎤 No voices available from TTS engine');
+        }
         return;
       }
 
-      print('🎤 Found ${voices.length} available voices');
-      print(
-        '🎤 Looking for $_language voices with ${_voiceGender == VoiceGender.male ? 'MALE' : 'FEMALE'} gender',
-      );
+      if (kDebugMode) {
+        print('🎤 Found ${voices.length} available voices');
+        print(
+          '🎤 Looking for $_language voices with ${_voiceGender == VoiceGender.male ? 'MALE' : 'FEMALE'} gender',
+        );
+      }
 
       // Filter voices by language first
       final languageVoices =
@@ -102,10 +113,14 @@ class TTSService {
             return voiceLocale == _language.toLowerCase();
           }).toList();
 
-      print('🎤 Found ${languageVoices.length} $_language voices');
+      if (kDebugMode) {
+        print('🎤 Found ${languageVoices.length} $_language voices');
+      }
 
       if (languageVoices.isEmpty) {
-        print('🎤 No voices found for $_language');
+        if (kDebugMode) {
+          print('🎤 No voices found for $_language');
+        }
         return;
       }
 
@@ -195,9 +210,11 @@ class TTSService {
           }
         } else if (_language.toLowerCase() == 'en-gb') {
           // UK English: Use gender-based selection
-          print('🎤 Available UK voices:');
-          for (final voice in languageVoices) {
-            print('🎤   ${voice['name']} (${voice['locale']})');
+          if (kDebugMode) {
+            print('🎤 Available UK voices:');
+            for (final voice in languageVoices) {
+              print('🎤   ${voice['name']} (${voice['locale']})');
+            }
           }
 
           if (_voiceGender == VoiceGender.male) {
@@ -216,9 +233,11 @@ class TTSService {
                 break;
               }
             }
-            print(
-              '🎤 Using UK MALE fallback voice: ${selectedVoice?['name'] ?? 'None found'}',
-            );
+            if (kDebugMode) {
+              print(
+                '🎤 Using UK MALE fallback voice: ${selectedVoice?['name'] ?? 'None found'}',
+              );
+            }
           } else {
             // Look for UK female voices
             for (final voice in languageVoices) {
@@ -235,9 +254,11 @@ class TTSService {
                 break;
               }
             }
-            print(
-              '🎤 Using UK FEMALE fallback voice: ${selectedVoice?['name'] ?? 'None found'}',
-            );
+            if (kDebugMode) {
+              print(
+                '🎤 Using UK FEMALE fallback voice: ${selectedVoice?['name'] ?? 'None found'}',
+              );
+            }
           }
         } else {
           // Other languages: Use first available voice
@@ -247,9 +268,11 @@ class TTSService {
               'name': firstVoice['name']?.toString() ?? '',
               'locale': firstVoice['locale']?.toString() ?? '',
             };
-            print(
-              '🎤 Using first available voice for $_language: ${selectedVoice['name']}',
-            );
+            if (kDebugMode) {
+              print(
+                '🎤 Using first available voice for $_language: ${selectedVoice['name']}',
+              );
+            }
           }
         }
       }
@@ -269,27 +292,43 @@ class TTSService {
         final voiceName = selectedVoice['name']?.toString() ?? '';
         final voiceLocale = selectedVoice['locale']?.toString() ?? '';
 
-        print(
-          '🎤 Final voice selection: $voiceName ($voiceLocale) for ${_voiceGender == VoiceGender.male ? 'MALE' : 'FEMALE'} $_language',
-        );
+        if (kDebugMode) {
+          print(
+            '🎤 Final voice selection: $voiceName ($voiceLocale) for ${_voiceGender == VoiceGender.male ? 'MALE' : 'FEMALE'} $_language',
+          );
+        }
 
         await _flutterTts.setVoice({'name': voiceName, 'locale': voiceLocale});
 
-        print('🎤 Voice applied successfully');
+        // Cache the successful voice selection
+        _cachedVoiceId = voiceName;
+
+        if (kDebugMode) {
+          print('🎤 Voice applied successfully');
+        }
       } else {
-        print(
-          '🎤 ERROR: No suitable voice found for ${_voiceGender == VoiceGender.male ? 'MALE' : 'FEMALE'} $_language',
-        );
+        if (kDebugMode) {
+          print(
+            '🎤 ERROR: No suitable voice found for ${_voiceGender == VoiceGender.male ? 'MALE' : 'FEMALE'} $_language',
+          );
+        }
       }
     } catch (e) {
-      print('🎤 Error applying voice selection: $e');
+      if (kDebugMode) {
+        print('🎤 Error applying voice selection: $e');
+      }
     }
   }
 
   Future<void> initialize() async {
-    print('🎤 initialize() called - _isInitialized: $_isInitialized');
+    if (kDebugMode) {
+      print('🎤 initialize() called - _isInitialized: $_isInitialized');
+    }
+
     if (_isInitialized) {
-      print('🎤 Already initialized, returning early');
+      if (kDebugMode) {
+        print('🎤 Already initialized, returning early');
+      }
       return;
     }
 
@@ -298,7 +337,9 @@ class TTSService {
       return;
     }
 
-    print('🎤 Starting TTS Service initialization...');
+    if (kDebugMode) {
+      print('🎤 Starting TTS Service initialization...');
+    }
 
     try {
       // Initialize TTS with background-friendly settings
@@ -307,7 +348,9 @@ class TTSService {
       await _flutterTts.setVolume(_volume);
       await _flutterTts.setPitch(_pitch);
 
-      print('🎤 Basic TTS settings configured');
+      if (kDebugMode) {
+        print('🎤 Basic TTS settings configured');
+      }
 
       // Configure for background playback
       await _flutterTts.setSharedInstance(true);
@@ -319,20 +362,28 @@ class TTSService {
           ]);
 
       // Set up handlers
-      print('🎤 Setting up TTS handlers...');
+      if (kDebugMode) {
+        print('🎤 Setting up TTS handlers...');
+      }
       _flutterTts.setStartHandler(() {
-        print('🎤 TTS start handler called');
+        if (kDebugMode) {
+          print('🎤 TTS start handler called');
+        }
         _updatePlayingState(true);
       });
 
       _flutterTts.setCompletionHandler(() {
-        print(
-          '🎤 TTS completion handler called - isMultipleMode: $_isMultipleReadingsMode',
-        );
+        if (kDebugMode) {
+          print(
+            '🎤 TTS completion handler called - isMultipleMode: $_isMultipleReadingsMode',
+          );
+        }
 
         // Cancel fallback timer since we got the real completion
         if (_completionTimer?.isActive == true) {
-          print('🎤 Cancelling fallback timer - real completion detected');
+          if (kDebugMode) {
+            print('🎤 Cancelling fallback timer - real completion detected');
+          }
           _completionTimer?.cancel();
         }
 
@@ -340,31 +391,45 @@ class TTSService {
 
         // Only call the appropriate callback based on current mode
         if (_isMultipleReadingsMode) {
-          print('🎤 Calling multiple reading completion callback');
+          if (kDebugMode) {
+            print('🎤 Calling multiple reading completion callback');
+          }
           _onMultipleReadingComplete?.call();
         } else {
-          print('🎤 Calling single reading completion callback');
+          if (kDebugMode) {
+            print('🎤 Calling single reading completion callback');
+          }
           _onSingleReadingComplete?.call();
         }
       });
 
       _flutterTts.setErrorHandler((msg) {
-        print('🎤 TTS error handler called: $msg');
+        if (kDebugMode) {
+          print('🎤 TTS error handler called: $msg');
+        }
         _updatePlayingState(false);
       });
 
-      print('🎤 TTS handlers configured successfully');
+      if (kDebugMode) {
+        print('🎤 TTS handlers configured successfully');
+      }
 
       // Load and apply voice preferences
       await _loadVoicePreferences();
 
-      // Debug: List available voices
-      await debugListVoices();
+      // Debug: List available voices (only in debug mode)
+      if (kDebugMode) {
+        await debugListVoices();
+      }
 
       _isInitialized = true;
-      print('🎤 TTS Service initialization completed successfully');
+      if (kDebugMode) {
+        print('🎤 TTS Service initialization completed successfully');
+      }
     } catch (e) {
-      print('🎤 TTS Service initialization failed: $e');
+      if (kDebugMode) {
+        print('🎤 TTS Service initialization failed: $e');
+      }
       // TTS Service: Error during initialization
     }
   }
@@ -397,11 +462,26 @@ class TTSService {
   Future<void> setVoiceGender(VoiceGender gender, {String? language}) async {
     // Prevent voice changes during multiple readings mode
     if (_isMultipleReadingsMode) {
-      print('🎤 Voice change blocked: Multiple readings in progress');
+      if (kDebugMode) {
+        print('🎤 Voice change blocked: Multiple readings in progress');
+      }
       return;
     }
 
     await initialize();
+
+    // Check if voice settings are already cached and match current request
+    final targetLanguage = language ?? _language;
+    if (_cachedGender == gender &&
+        _cachedLanguage == targetLanguage &&
+        _cachedVoiceId != null) {
+      if (kDebugMode) {
+        print(
+          '🎤 Using cached voice: $_cachedVoiceId for ${gender == VoiceGender.male ? 'MALE' : 'FEMALE'} $targetLanguage',
+        );
+      }
+      return;
+    }
 
     _voiceGender = gender;
     if (language != null) {
@@ -409,16 +489,24 @@ class TTSService {
       try {
         await _flutterTts.setLanguage(_language);
       } catch (e) {
-        print('🎤 Error setting language: $e');
+        if (kDebugMode) {
+          print('🎤 Error setting language: $e');
+        }
       }
     }
 
-    print(
-      '🎤 Setting voice gender to: ${gender == VoiceGender.male ? 'MALE' : 'FEMALE'} with language: $_language',
-    );
+    if (kDebugMode) {
+      print(
+        '🎤 Setting voice gender to: ${gender == VoiceGender.male ? 'MALE' : 'FEMALE'} with language: $_language',
+      );
+    }
 
     // Use the streamlined voice selection method
     await _applyVoiceSelection();
+
+    // Cache the successful voice selection
+    _cachedGender = gender;
+    _cachedLanguage = _language;
   }
 
   Future<void> setSpeechRate(double rate) async {
